@@ -72,5 +72,37 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	var parsedInput = utils.ParseLines(input)
+
+	var len = len(parsedInput)
+
+	left := make([]int, len)
+	right := make([]int, len)
+
+	for i := 0; i < len; i++ {
+		line := strings.Split(parsedInput[i], "   ")
+
+		leftVal, _ := strconv.Atoi(line[0])
+		rightVal, _ := strconv.Atoi(line[1])
+
+		left[i] = leftVal
+		right[i] = rightVal
+	}
+
+	// sort the two lists
+	sort.Ints(left)
+	sort.Ints(right)
+
+	sum := 0
+	for i := 0; i < len; i++ {
+		times := 0
+		for j := 0; j < len && right[j] <= left[i]; j++ {
+			if right[j] == left[i] {
+				times++
+			}
+		}
+		sum += left[i] * times
+	}
+
+	return strconv.Itoa(sum)
 }
