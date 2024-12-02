@@ -47,36 +47,15 @@ func solvePart1(input string) string {
 		list := make([]int, len(stringList))
 
 		// it is easier if we use a list of integers, mainly for the jump which can be of maximum 3
-		for i := 0; i < len(stringList); i++ {
-			list[i], _ = strconv.Atoi(stringList[i])
+		for j := 0; j < len(stringList); j++ {
+			list[j], _ = strconv.Atoi(stringList[j])
 		}
 
-		var safe = true
-		// fmt.Print(list)
-
-		if list[0] > list[1] { // meaning it is increasing
-			for j := 0; j < len(list)-1; j++ { // start from the same cell to check abs here as well
-				if list[j] <= list[j+1] || utils.AbsInt(list[j]-list[j+1]) > 3 {
-					fmt.Printf("%d unsafe\n", list)
-					safe = false
-					break
-				}
-			}
-		} else if list[0] < list[1] { // and here decreasing
-			for j := 0; j < len(list)-1; j++ {
-				if list[j] >= list[j+1] || utils.AbsInt(list[j]-list[j+1]) > 3 {
-					fmt.Printf("%d unsafe\n", list)
-					safe = false
-					break
-				}
-			}
-		} else {
-			safe = false
-		}
-
-		if safe {
+		if safe := isListSafe(list); safe {
 			fmt.Printf("%d safe\n", list)
 			safeCount++
+		} else {
+			fmt.Printf("%d unsafe\n", list)
 		}
 	}
 
@@ -84,6 +63,62 @@ func solvePart1(input string) string {
 }
 
 func solvePart2(input string) string {
+	parsedInput := utils.ParseLines(input)
+	safeCount := 0
 
-	return "Solution for Part 2 not implemented"
+	for i := 0; i < len(parsedInput); i++ {
+		stringList := utils.ParseSpace((parsedInput[i]))
+
+		list := make([]int, len(stringList))
+
+		for j := 0; j < len(stringList); j++ {
+			list[j], _ = strconv.Atoi(stringList[j])
+		}
+
+		if isListSafe(list) {
+			fmt.Printf("%d safe\n", list)
+			safeCount++
+			continue
+		}
+
+		// skipping each element
+		for k := 0; k < len(list); k++ {
+			if isListSafe(removeIndex(list, k)) {
+				fmt.Printf("%d safe\n", list)
+				safeCount++
+				break
+			}
+		}
+		fmt.Printf("%d unsafe\n", list)
+	}
+
+	return strconv.Itoa(safeCount)
+}
+
+func removeIndex(list []int, index int) []int {
+	newList := make([]int, 0, len(list)-1)
+	newList = append(newList, list[:index]...)
+	return append(newList, list[index+1:]...)
+}
+
+func isListSafe(list []int) bool {
+	if len(list) <= 2 { // list with 2 or less elements is always safe (as you can skip the second if they are the same)
+		return true
+	}
+
+	increasing := list[0] < list[1]
+	for i := 1; i < len(list); i++ {
+		diff := list[i] - list[i-1]
+		if increasing {
+			if diff <= 0 || diff > 3 {
+				return false
+			}
+		} else {
+			if diff >= 0 || -diff > 3 {
+				return false
+			}
+		}
+	}
+
+	return true
 }
