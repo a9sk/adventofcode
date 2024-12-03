@@ -9,16 +9,13 @@ DAY_DIR="solutions/day-${DAY}"
 
 if [ -d "$DAY_DIR" ]; then
     echo "Directory '$DAY_DIR' already exists."
+    exit 0
 else
     mkdir "$DAY_DIR"
     echo "Created directory '$DAY_DIR'."
 fi
 
-MAIN_GO="${DAY_DIR}/main.go"
-if [ -f "$MAIN_GO" ]; then
-    echo "'main.go' already exists in '$DAY_DIR'. Skipping creation."
-else
-  cat << EOF > "$MAIN_GO"
+cat <<EOF > "$DAY_DIR/main.go"
 package main
 
 import (
@@ -26,11 +23,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
-
 	file, err := os.Open("input.txt")
 	if err != nil {
 		fmt.Println("Error opening input file:", err)
@@ -38,30 +33,40 @@ func main() {
 	}
 	defer file.Close()
 
-	var input []string
+	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		input = append(input, scanner.Text())
+		lines = append(lines, scanner.Text())
 	}
 	if err := scanner.Err(); err != nil {
 		fmt.Println("Error reading input:", err)
 		return
 	}
 
-	result := solve(input)
-	fmt.Println("Solution:", result)
+	input := strings.Join(lines, "\n")
+
+	resultPart1 := solvePart1(string(input))
+	fmt.Println("Solution Part 1:", resultPart1)
+
+	resultPart2 := solvePart2(string(input))
+	fmt.Println("Solution Part 2:", resultPart2)
 }
 
-func solve(input []string) string {
-	return "Implement me!"
+func solvePart1(input string) string {
+
+	return "Solution for Part 1 not implemented"
+}
+
+func solvePart2(input string) string {
+
+	return "Solution for Part 2 not implemented"
 }
 EOF
-    
-    echo "Created 'main.go' in '$DAY_DIR'."
-fi
 
-# Create empty input files
 touch "${DAY_DIR}/input.txt"
 echo "Initialized input.txt in '$DAY_DIR'."
+
+touch "${DAY_DIR}/test_input.txt"
+echo "Initialized test_input.txt in '$DAY_DIR'."
 
 echo "Setup complete for Day ${DAY}!"
