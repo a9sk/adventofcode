@@ -60,5 +60,30 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	keepPattern := `mul\(\d{1,10},\d{1,10}\)|do\(\)|don\'t\(\)`
+	numPattern := `\d{1,10}`
+
+	re := regexp.MustCompile(keepPattern)
+
+	matches := re.FindAllString(input, -1)
+
+	var sum int
+
+	doMul := true
+
+	for i := 0; i < len(matches); i++ {
+		if matches[i] == "do()" {
+			doMul = true
+		} else if matches[i] == "don't()" {
+			doMul = false
+		} else if doMul {
+			re := regexp.MustCompile(numPattern)
+			numbers := re.FindAllString(matches[i], -1)
+			first, _ := strconv.Atoi(numbers[0])
+			second, _ := strconv.Atoi(numbers[1])
+			sum += first * second
+		}
+	}
+
+	return strconv.Itoa(sum)
 }
