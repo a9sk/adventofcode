@@ -83,5 +83,52 @@ func isOrdered(upgrade string, rules []string) (bool, string) {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	rules := utils.ParseLines(strings.Split(input, "\n\n")[0])
+	upgrades := utils.ParseLines(strings.Split(input, "\n\n")[1])
+	var sum = 0
+
+	for i := 0; i < len(upgrades); i++ {
+		if ok, _ := isOrdered(upgrades[i], rules); !ok { // only care about unordered lists
+			orderedUpgrade := doOrder(upgrades[i], rules)
+			midValue, _ := strconv.Atoi(orderedUpgrade[len(orderedUpgrade)/2])
+			sum += midValue
+		}
+	}
+
+	return strconv.Itoa(sum)
+}
+
+func doOrder(upgrade string, rules []string) []string {
+	values := strings.Split(upgrade, ",")
+
+	var done = false
+	for {
+		for _, rule := range rules {
+			parts := strings.Split(rule, "|")
+			first, second := parts[0], parts[1]
+			firstIndex, secondIndex := -1, -1
+			for i, v := range values {
+				if v == first && firstIndex == -1 {
+					firstIndex = i
+				}
+				if v == second && secondIndex == -1 {
+					secondIndex = i
+				}
+			}
+			if secondIndex != -1 && firstIndex > secondIndex {
+				values[firstIndex] = second
+				values[secondIndex] = first
+			}
+
+			if ok, _ := isOrdered(strings.Join(values, ","), rules); ok {
+				done = true
+				break
+			}
+		}
+		if done {
+			break
+		}
+	}
+
+	return values
 }
