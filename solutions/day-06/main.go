@@ -37,6 +37,22 @@ func main() {
 	fmt.Println("Solution Part 2:", resultPart2)
 }
 
+type position struct {
+	y int
+	x int
+}
+
+var directions = []struct {
+	name   string
+	dy, dx int
+	next   string
+}{
+	{"up", -1, 0, "right"},
+	{"right", 0, 1, "down"},
+	{"down", 1, 0, "left"},
+	{"left", 0, -1, "up"},
+}
+
 func solvePart1(input string) string {
 	field := utils.ParseGrid(utils.ParseLines(input))
 
@@ -72,11 +88,6 @@ func solvePart1(input string) string {
 		}
 	}
 	return strconv.Itoa(sum)
-}
-
-type position struct {
-	y int
-	x int
 }
 
 // func Move(field [][]rune, pos position, direction string) ([][]rune, position, string, bool) {
@@ -127,9 +138,6 @@ type position struct {
 // 		}
 // 	}
 
-// 	return field, pos, direction, false // should not be a possibility but if it happens i want the for to stop
-// }
-
 func recursiveMove(field [][]rune, pos position, direction string) ([][]rune, bool) {
 	field[pos.y][pos.x] = 'X'
 
@@ -161,18 +169,82 @@ func recursiveMove(field [][]rune, pos position, direction string) ([][]rune, bo
 	return field, false
 }
 
-var directions = []struct {
-	name   string
-	dy, dx int
-	next   string
-}{
-	{"up", -1, 0, "right"},
-	{"right", 0, 1, "down"},
-	{"down", 1, 0, "left"},
-	{"left", 0, -1, "up"},
+func solvePart2(input string) string {
+	restartField := utils.ParseGrid(utils.ParseLines(input))
+
+	var startPos position
+	for i := 0; i < len(restartField); i++ {
+		for j := 0; j < len(restartField[i]); j++ {
+			if restartField[i][j] == '^' {
+				startPos = position{i, j}
+				break
+			}
+		}
+	}
+
+	var sum = 0
+	for i := 0; i < len(restartField); i++ {
+		for j := 0; j < len(restartField[i]); j++ {
+
+			field := make([][]rune, len(restartField))
+			for restartFieldRow := range restartField {
+				field[restartFieldRow] = append([]rune(nil), restartField[restartFieldRow]...)
+			}
+
+			if field[i][j] == '#' || field[i][j] == '^' {
+				continue
+			} else {
+				field[i][j] = '#'
+				seen := make([]posDir, len(restartField)*len(restartField[0])) // i will probably need to learn how to use maps one day...
+				if recursiveMoveLoopCheck(field, startPos, "up", seen) {
+					sum++
+				}
+			}
+		}
+	}
+
+	return strconv.Itoa(sum)
 }
 
-func solvePart2(input string) string {
+type posDir struct {
+	pos       position
+	direction string
+}
 
-	return "Solution for Part 2 not implemented"
+// running this thing took me about 10 minutes... probably recursion isn't the best way
+func recursiveMoveLoopCheck(field [][]rune, pos position, direction string, seen []posDir) bool {
+	for _, i := range seen {
+		if i.pos == pos && i.direction == direction {
+			return true
+		}
+	}
+
+	seen = append(seen, posDir{pos, direction})
+
+	var dir struct {
+		name   string
+		dy, dx int
+		next   string
+	}
+	for _, d := range directions {
+		if d.name == direction {
+			dir = d
+			break
+		}
+	}
+
+	nextPos := position{pos.y + dir.dy, pos.x + dir.dx}
+
+	if nextPos.y < 0 || nextPos.y >= len(field) || nextPos.x < 0 || nextPos.x >= len(field[0]) {
+		return false
+	}
+
+	nextCell := field[nextPos.y][nextPos.x]
+	if nextCell == '.' || nextCell == '^' {
+		return recursiveMoveLoopCheck(field, nextPos, dir.name, seen)
+	} else if nextCell == '#' {
+		return recursiveMoveLoopCheck(field, pos, dir.next, seen)
+	}
+
+	return false
 }
