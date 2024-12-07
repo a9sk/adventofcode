@@ -92,6 +92,66 @@ func isCalibrationCorrect(operation operation, currentResult int, index int) boo
 }
 
 func solvePart2(input string) string {
+	lines := strings.Split(input, "\n")
+	var sum int
+	for _, line := range lines {
+		parts := strings.Split(line, ": ")
+		testValue, _ := strconv.Atoi(parts[0])
+		operands := strings.Split(parts[1], " ")
 
-	return "Solution for Part 2 not implemented"
+		if checkOperations(operands, testValue, []string{"+", "*", "||"}) {
+			sum += testValue
+		}
+	}
+	return strconv.Itoa(sum)
+}
+
+func checkOperations(operands []string, testValue int, operators []string) bool {
+	operatorCombinations := generateOperatorCombinations(len(operands)-1, operators)
+
+	for _, ops := range operatorCombinations {
+		if evaluateExpression(operands, ops) == testValue {
+			return true
+		}
+	}
+	return false
+}
+
+func generateOperatorCombinations(numOperators int, operators []string) [][]string {
+	var combinations [][]string
+	var generate func(int, []string)
+	generate = func(index int, currentCombination []string) {
+		if index == numOperators {
+			combinations = append(combinations, append([]string{}, currentCombination...))
+			return
+		}
+		for _, operator := range operators {
+			currentCombination = append(currentCombination, operator)
+			generate(index+1, currentCombination)
+			currentCombination = currentCombination[:len(currentCombination)-1]
+		}
+	}
+	generate(0, []string{})
+	return combinations
+}
+
+func evaluateExpression(operands []string, operators []string) int {
+	nums := make([]int, len(operands))
+	for i, operand := range operands {
+		nums[i], _ = strconv.Atoi(operand)
+	}
+
+	result := nums[0]
+	for i := 1; i < len(nums); i++ {
+		operator := operators[i-1]
+		switch operator {
+		case "+":
+			result += nums[i]
+		case "*":
+			result *= nums[i]
+		case "||":
+			result, _ = strconv.Atoi(fmt.Sprintf("%d%d", result, nums[i]))
+		}
+	}
+	return result
 }
