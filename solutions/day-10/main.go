@@ -114,5 +114,59 @@ func isValidMove(field [][]rune, current, next point, visited map[point]bool) bo
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	field := utils.ParseGrid(utils.ParseLines(input))
+
+	startingPoints := []point{}
+	for y, row := range field {
+		for x, _ := range row {
+			if field[y][x] == '0' {
+				startingPoints = append(startingPoints, point{y: y, x: x})
+			}
+		}
+	}
+
+	var sum = 0
+	for _, point := range startingPoints {
+		sum += calculateTrailheadRating(field, point)
+	}
+
+	return strconv.Itoa(sum)
+}
+
+func calculateTrailheadRating(field [][]rune, start point) int {
+	visited := make(map[point]bool)
+	rating := 0
+	stack := []point{start}
+
+	var dfs func(node point, visited map[point]bool, path []point)
+
+	dfs = func(node point, visited map[point]bool, path []point) {
+		visited[node] = true
+		path = append(path, node)
+
+		if field[node.y][node.x] == '9' {
+			rating++
+			visited[node] = false
+			return
+		}
+
+		directions := []point{
+			{node.y + 1, node.x},
+			{node.y - 1, node.x},
+			{node.y, node.x + 1},
+			{node.y, node.x - 1},
+		}
+
+		for _, next := range directions {
+			if isValidMove(field, node, next, visited) {
+				dfs(next, visited, path)
+			}
+		}
+
+		visited[node] = false
+	}
+
+	dfs(start, visited, stack)
+
+	return rating
 }
