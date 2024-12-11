@@ -43,46 +43,61 @@ func solvePart1(input string) string {
 		stones[i], _ = strconv.Atoi(stone)
 	}
 
-	for b := 0; b < 25; b++ {
-		stones = blink(stones)
+	cache := make(map[string]int)
+
+	totalLength := 0
+	for _, stone := range stones {
+		totalLength += blinkWithCache(stone, 25, cache)
 	}
 
-	return strconv.Itoa(len(stones))
+	return strconv.Itoa(totalLength)
+
+	// stones := make([]int, len(strings.Split(input, " ")))
+
+	// for i, stone := range strings.Split(input, " ") {
+	// 	stones[i], _ = strconv.Atoi(stone)
+	// }
+
+	// for b := 0; b < 25; b++ {
+	// 	stones = blink(stones)
+	// }
+
+	// return strconv.Itoa(len(stones))
 }
 
-func blink(stones []int) []int {
+// func blink(stones []int) []int {
 
-	var i = 0
-	for i < len(stones) {
+// 	var i = 0
+// 	for i < len(stones) {
 
-		// if the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1
-		if stones[i] == 0 {
-			stones[i] = 1
-			i++
-			continue
-		}
+// 		// if the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1
+// 		if stones[i] == 0 {
+// 			stones[i] = 1
+// 			i++
+// 			continue
+// 		}
 
-		// if the stone is engraved with a number that has an even number of digits,
-		// it is replaced by two stones.
-		// the left half of the digits are engraved on the new left stone,
-		// and the right half of the digits are engraved on the new right stone
-		if len(strconv.Itoa(stones[i]))%2 == 0 {
-			stoneValue := strconv.Itoa(stones[i])
-			mid := len(stoneValue) / 2
-			firstPart, _ := strconv.Atoi(stoneValue[:mid])
-			secondPart, _ := strconv.Atoi(stoneValue[mid:])
-			stones = append(stones[:i], append([]int{firstPart, secondPart}, stones[i+1:]...)...)
-			i += 2 // so it skips the new stone added
-			continue
-		}
+// 		// if the stone is engraved with a number that has an even number of digits,
+// 		// it is replaced by two stones.
+// 		// the left half of the digits are engraved on the new left stone,
+// 		// and the right half of the digits are engraved on the new right stone
+// 		if len(strconv.Itoa(stones[i]))%2 == 0 {
+// 			stoneValue := strconv.Itoa(stones[i])
+// 			mid := len(stoneValue) / 2
+// 			firstPart, _ := strconv.Atoi(stoneValue[:mid])
+// 			secondPart, _ := strconv.Atoi(stoneValue[mid:])
+// 			stones = append(stones[:i], append([]int{firstPart, secondPart}, stones[i+1:]...)...)
+// 			i += 2 // so it skips the new stone added
+// 			continue
+// 		}
 
-		// if none of the other rules apply, the old stone's number multiplied by 2024 is engraved on the new stone
-		stones[i] = stones[i] * 2024
-		i++
-	}
+// 		// if none of the other rules apply, the old stone's number multiplied by 2024 is engraved on the new stone
+// 		stones[i] = stones[i] * 2024
+// 		i++
+// 	}
 
-	return stones
-}
+// 	return stones
+// }
 
 func solvePart2(input string) string {
 
@@ -117,16 +132,21 @@ func blinkWithCache(stone int, iterations int, cache map[string]int) int {
 
 	var result int
 	if stone == 0 {
+		// if the stone is engraved with the number 0, it is replaced by a stone engraved with the number 1
 		result = blinkWithCache(1, iterations-1, cache)
 	} else {
 		stoneValue := strconv.Itoa(stone)
 		if len(stoneValue)%2 == 0 {
+			// if the stone is engraved with a number that has an even number of digits,
+			// it is replaced by two stones.
+			// the left half of the digits are engraved on the new left stone,
+			// and the right half of the digits are engraved on the new right stone
 			mid := len(stoneValue) / 2
 			firstPart, _ := strconv.Atoi(stoneValue[:mid])
 			secondPart, _ := strconv.Atoi(stoneValue[mid:])
-			result = blinkWithCache(firstPart, iterations-1, cache) +
-				blinkWithCache(secondPart, iterations-1, cache)
+			result = blinkWithCache(firstPart, iterations-1, cache) + blinkWithCache(secondPart, iterations-1, cache)
 		} else {
+			// if none of the other rules apply, the old stone's number multiplied by 2024 is engraved on the new stone
 			newStone := stone * 2024
 			result = blinkWithCache(newStone, iterations-1, cache)
 		}
