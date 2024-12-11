@@ -86,5 +86,52 @@ func blink(stones []int) []int {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	stones := make([]int, len(strings.Split(input, " ")))
+
+	for i, stone := range strings.Split(input, " ") {
+		stones[i], _ = strconv.Atoi(stone)
+	}
+
+	cache := make(map[string]int)
+
+	totalLength := 0
+	for _, stone := range stones {
+		// using cache i waaaaaay faster that "bruteforcing" it normally
+		totalLength += blinkWithCache(stone, 75, cache)
+	}
+
+	return strconv.Itoa(totalLength)
+}
+
+func blinkWithCache(stone int, iterations int, cache map[string]int) int {
+
+	cacheKey := fmt.Sprintf("%d-%d", stone, iterations)
+
+	if cachedResult, exists := cache[cacheKey]; exists {
+		return cachedResult
+	}
+
+	if iterations == 0 {
+		return 1
+	}
+
+	var result int
+	if stone == 0 {
+		result = blinkWithCache(1, iterations-1, cache)
+	} else {
+		stoneValue := strconv.Itoa(stone)
+		if len(stoneValue)%2 == 0 {
+			mid := len(stoneValue) / 2
+			firstPart, _ := strconv.Atoi(stoneValue[:mid])
+			secondPart, _ := strconv.Atoi(stoneValue[mid:])
+			result = blinkWithCache(firstPart, iterations-1, cache) +
+				blinkWithCache(secondPart, iterations-1, cache)
+		} else {
+			newStone := stone * 2024
+			result = blinkWithCache(newStone, iterations-1, cache)
+		}
+	}
+
+	cache[cacheKey] = result
+	return result
 }
