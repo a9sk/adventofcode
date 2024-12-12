@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"image"
 	"os"
 	"strconv"
 	"strings"
@@ -133,7 +134,49 @@ func findGroups(grid [][]rune) map[int]struct {
 	return groups
 }
 
+// this solution is inspired by many implementations i found on the AoC reddit page
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	grid := map[image.Point]rune{}
+	for y, line := range utils.ParseLines(input) {
+		for x, rune := range line {
+			grid[image.Point{x, y}] = rune
+		}
+	}
+
+	seen := map[image.Point]bool{}
+	var sum = 0
+
+	for plot := range grid {
+		if seen[plot] {
+			continue
+		}
+		seen[plot] = true
+
+		area := 1
+		sides := 0
+		queue := []image.Point{plot}
+		for len(queue) > 0 {
+			current := queue[0]
+			queue = queue[1:]
+
+			for _, direction := range []image.Point{{0, -1}, {1, 0}, {0, 1}, {-1, 0}} {
+				neighbor := current.Add(direction)
+				if grid[neighbor] != grid[current] {
+					r := current.Add(image.Point{-direction.Y, direction.X})
+					if grid[r] != grid[current] || grid[r.Add(direction)] == grid[current] {
+						sides++
+					}
+				} else if !seen[neighbor] {
+					seen[neighbor] = true
+					queue = append(queue, neighbor)
+					area++
+				}
+			}
+		}
+		sum += area * sides
+	}
+
+	return strconv.Itoa(sum)
+
 }
