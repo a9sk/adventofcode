@@ -53,9 +53,15 @@ func solvePart1(input string) string {
 	return strconv.Itoa(sum)
 }
 
+// part two is the same as parto one, just using bigger prize x and y
 func solvePart2(input string) string {
-
-	return "Solution for Part 2 not implemented"
+	clawMachines := strings.Split(strings.TrimSpace(string(input)), "\n\n")
+	var sum = 0
+	for _, clawMachine := range clawMachines {
+		a, b, p := parseButtons(strings.Split(clawMachine, "\n"))
+		sum += findPresses(a, b, prize{x: p.x + 10000000000000, y: p.y + 10000000000000})
+	}
+	return strconv.Itoa(sum)
 }
 
 func parseButtons(clawMachine []string) (button, button, prize) {
