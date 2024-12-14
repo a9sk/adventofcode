@@ -114,5 +114,18 @@ func parseRobots(input string) []robot {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	robots := parseRobots(input)
+
+	for t := 1; ; t++ {
+		seen := make(map[point]struct{})
+
+		for i := range robots {
+			robots[i].position = point{x: ((robots[i].position.x+robots[i].vector.x)%fieldWidth + fieldWidth) % fieldWidth, y: ((robots[i].position.y+robots[i].vector.y)%fieldHeight + fieldHeight) % fieldHeight}
+			seen[robots[i].position] = struct{}{}
+		}
+
+		if len(seen) == len(robots) {
+			return strconv.Itoa(t)
+		}
+	}
 }
