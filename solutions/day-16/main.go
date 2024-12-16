@@ -165,5 +165,97 @@ func getOffsets(reindeer directedPoint) []directedPoint {
 }
 
 func solvePart2(input string) string {
-	return "part 2 not implemented"
+	grid := utils.ParseGrid(utils.ParseLines(input))
+
+	var reindeer directedPoint
+	var end point
+
+	maze := make([][]rune, len(grid))
+	for y := range grid {
+		maze[y] = make([]rune, len(grid[y]))
+		for x := range grid[y] {
+			switch grid[y][x] {
+			case 'S':
+				reindeer = directedPoint{point{x, y}, east}
+				maze[y][x] = '.'
+			case 'E':
+				end = point{x, y}
+				maze[y][x] = '.'
+			default:
+				maze[y][x] = grid[y][x]
+			}
+		}
+	}
+
+	bestPaths := findAllBestPaths(reindeer, end, maze)
+
+	uniqueTiles := countUniqueTiles(bestPaths, maze)
+
+	return strconv.Itoa(uniqueTiles)
+}
+
+func findAllBestPaths(reindeer directedPoint, end point, maze [][]rune) [][]directedPoint {
+	bestScore := math.MaxInt
+	queue := []routeState{{reindeer, []directedPoint{reindeer}, 0}}
+	visited := make(map[directedPoint]int)
+	bestPaths := [][]directedPoint{}
+
+	for len(queue) > 0 {
+		state := queue[0]
+		queue = queue[1:]
+
+		if len(state.steps) > 10000 || state.score > bestScore {
+			continue
+		}
+
+		if state.reindeer.point == end {
+			if state.score < bestScore {
+				bestPaths = [][]directedPoint{state.steps}
+				bestScore = state.score
+			} else if state.score == bestScore {
+				bestPaths = append(bestPaths, state.steps)
+			}
+			continue
+		}
+
+		for _, candidate := range getOffsets(state.reindeer) {
+			if maze[candidate.point.y][candidate.point.x] == '.' {
+				score := state.score + 1
+				if state.reindeer.direction != candidate.direction {
+					score += 1000
+				}
+
+				if previous, found := visited[candidate]; found {
+					if previous < score {
+						continue
+					}
+				}
+				visited[candidate] = score
+
+				newSteps := make([]directedPoint, len(state.steps))
+				copy(newSteps, state.steps)
+
+				queue = append(queue, routeState{
+					reindeer: candidate,
+					steps:    append(newSteps, candidate),
+					score:    score})
+			}
+		}
+	}
+
+	return bestPaths
+}
+
+func countUniqueTiles(paths [][]directedPoint, maze [][]rune) int {
+	uniqueTiles := make(map[point]bool)
+
+	for _, path := range paths {
+		for _, step := range path {
+			if maze[step.point.y][step.point.x] != '#' {
+				uniqueTiles[step.point] = true
+			}
+		}
+	}
+
+	return len(uniqueTiles)
 }
