@@ -52,7 +52,22 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	return "Solution for part 2 not implemented"
+	_, B, C, commands := parseInput(input)
+
+	var program []int
+	for _, val := range strings.Split(commands, ",") {
+		num, _ := strconv.Atoi(val)
+		program = append(program, num)
+	}
+
+	A := 0
+	for n := len(program) - 1; n >= 0; n-- {
+		A = A << 3
+		for !equalOutput(calculateProgram(A, B, C, program), program[n:]) {
+			A++
+		}
+	}
+	return strconv.Itoa(A)
 }
 
 func parseInput(input string) (int, int, int, string) {
@@ -113,4 +128,16 @@ func calculateProgram(A, B, C int, program []int) []int {
 	}
 
 	return output
+}
+
+func equalOutput(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
