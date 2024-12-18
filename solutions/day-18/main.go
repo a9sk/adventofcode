@@ -88,5 +88,50 @@ mainFor:
 
 func solvePart2(input string) string {
 
-	return "Solution for part 2 not implemented"
+	/*  NOTE:
+	    Part 2 is pretty much the same to part one, the only difference is
+		that you do not have to leave the loop when you find the shortest path
+		and wait untill the field gets blocked out (when the length of the
+		queue is zero)
+	*/
+
+	bytes := []Point{}
+
+	for _, line := range strings.Split(input, "\n") {
+		var x, y int
+		fmt.Sscanf(line, "%d,%d", &x, &y)
+		bytes = append(bytes, Point{x: x, y: y})
+	}
+
+	field := map[Point]bool{}
+	for y := 0; y < 71; y++ {
+		for x := 0; x < 71; x++ {
+			field[Point{x: x, y: y}] = true
+		}
+	}
+
+mainFor:
+	for bite := range bytes {
+		field[bytes[bite]] = false
+
+		queue, distance := []Point{{0, 0}}, map[Point]int{{0, 0}: 0}
+		for len(queue) > 0 {
+			position := queue[0]
+			queue = queue[1:]
+
+			if position == (Point{70, 70}) {
+				continue mainFor
+			}
+
+			for _, direction := range []Point{{0, -1}, {1, 0}, {0, 1}, {-1, 0}} {
+				new := Point{x: position.x + direction.x, y: position.y + direction.y}
+				if _, ok := distance[new]; !ok && field[new] {
+					queue, distance[new] = append(queue, new), distance[position]+1
+				}
+			}
+		}
+		return fmt.Sprintf("%d,%d", bytes[bite].x, bytes[bite].y)
+	}
+
+	return "the input is probably wrong"
 }
