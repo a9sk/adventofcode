@@ -79,5 +79,40 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	return "Solution for part 2 not implemented"
+	var towels []string
+	towels = append(towels, strings.Split(strings.Split(input, "\n\n")[0], ", ")...)
+
+	var design []string
+	design = append(design, strings.Split(strings.Split(input, "\n\n")[1], "\n")...)
+
+	cache := map[string]int{}
+
+	var checkDesign func(string) int
+	checkDesign = func(d string) (sum int) {
+		if sum, ok := cache[d]; ok {
+			return sum
+		}
+
+		// ok, this is a very neat trick i saw on the AoC reddit page
+		// what it does is it always updates the cache when the recursive function's recursion ends
+		defer func() { cache[d] = sum }()
+
+		if d == "" {
+			return 1
+		}
+		for _, t := range towels {
+			if strings.HasPrefix(d, t) {
+				sum += checkDesign(d[len(t):])
+			}
+		}
+		return sum
+	}
+
+	var sum = 0
+
+	for _, s := range design {
+		sum += checkDesign(s)
+	}
+
+	return strconv.Itoa(sum)
 }
