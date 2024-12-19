@@ -51,17 +51,31 @@ func solvePart1(input string) string {
 		design = append(design, line)
 	}
 
+	// ADDED CACHE LATER ON (after solution 2)
+
+	cache := map[string]bool{}
+
 	var checkDesign func(string) bool
 	checkDesign = func(d string) bool {
+		if result, exists := cache[d]; exists {
+			return result
+		}
+
 		if d == "" {
+			cache[d] = true
 			return true
 		}
+
 		for _, t := range towels {
 			if strings.HasPrefix(d, t) {
-				return checkDesign(d[len(t):])
+				if checkDesign(d[len(t):]) {
+					cache[d] = true
+					return true
+				}
 			}
 		}
 
+		cache[d] = false
 		return false
 	}
 
