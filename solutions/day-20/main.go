@@ -96,5 +96,28 @@ func abs(number int) int {
 
 func solvePart2(input string) string {
 
-	return "Solution for part 2 not implemented"
+	field := map[Point]rune{}
+	start := Point{}
+	for y, line := range strings.Fields(input) {
+		for x, r := range line {
+			point := Point{x, y}
+			field[point] = r
+			if r == 'S' {
+				start = point
+			}
+		}
+	}
+
+	distances := adventOfBFS(field, start)
+
+	var sum = 0
+	for pointOne := range distances {
+		for pointTwo := range distances {
+			distance := abs(pointTwo.x-pointOne.x) + abs(pointTwo.y-pointOne.y)
+			if distance <= 20 && distances[pointTwo] >= distances[pointOne]+distance+100 {
+				sum++
+			}
+		}
+	}
+	return strconv.Itoa(sum)
 }
