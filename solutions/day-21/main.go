@@ -171,5 +171,47 @@ func findPaths(input map[string]Point, start, end string) []string {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	keycodes := strings.Split(input, "\n")
+	cache := make(map[string]int)
+	var sum = 0
+
+	var findPress func(input map[string]Point, code string, robot int) int
+	findPress = func(input map[string]Point, code string, robot int) int {
+		key := fmt.Sprintf("%s,%d", code, robot)
+		if n, ok := cache[key]; ok {
+			return n
+		}
+
+		current := "A"
+		length := 0
+		for i := 0; i < len(code); i++ {
+			moves := findPaths(input, current, string(code[i]))
+			if robot == 0 {
+				length += len(moves[0])
+			} else {
+				minLength := math.MaxInt
+				for _, move := range moves {
+					minLength = int(math.Min(float64(minLength), float64(findPress(secondKeypad, move, robot-1))))
+				}
+				length += minLength
+			}
+			current = string(code[i])
+		}
+
+		cache[key] = length
+		return length
+	}
+
+	for _, code := range keycodes {
+		n := 0
+		for _, c := range code {
+			if c >= '0' && c <= '9' {
+				n = n*10 + int(c-'0')
+			}
+		}
+		// the only difference between part 1 and part 2 is here...
+		sum += n * findPress(keypad, code, 25)
+	}
+
+	return strconv.Itoa(sum)
 }
