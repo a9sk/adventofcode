@@ -75,5 +75,64 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	connections := strings.Split(input, "\n")
+
+	graph := make(map[string][]string)
+	var nodes []string
+	nodeSet := make(map[string]bool)
+
+	for _, connection := range connections {
+		p := strings.Split(connection, "-")
+		a, b := p[0], p[1]
+
+		graph[a] = append(graph[a], b)
+		graph[b] = append(graph[b], a)
+
+		if !nodeSet[a] {
+			nodes = append(nodes, a)
+			nodeSet[a] = true
+		}
+		if !nodeSet[b] {
+			nodes = append(nodes, b)
+			nodeSet[b] = true
+		}
+	}
+
+	isClique := func(subset []string) bool {
+		for i, node := range subset {
+			for j := i + 1; j < len(subset); j++ {
+				if !slices.Contains(graph[node], subset[j]) {
+					return false
+				}
+			}
+		}
+		return true
+	}
+
+	maxClique := []string{}
+	slices.Sort(nodes)
+
+	// i am liking recursion but today it is pretty slow...
+	var expandClique func(current []string, candidates []string)
+	expandClique = func(current []string, candidates []string) {
+		if len(current) > len(maxClique) && isClique(current) {
+			maxClique = slices.Clone(current)
+		}
+
+		for i, candidate := range candidates {
+			if len(current)+len(candidates)-i <= len(maxClique) {
+				break
+			}
+
+			newCurrent := append(slices.Clone(current), candidate)
+			if isClique(newCurrent) {
+				expandClique(newCurrent, candidates[i+1:])
+			}
+		}
+	}
+
+	expandClique([]string{}, nodes)
+
+	slices.Sort(maxClique)
+	return strings.Join(maxClique, ",") // parse the output as they want it
 }
