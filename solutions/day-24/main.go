@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -118,7 +119,72 @@ func evaluate(gate Gate, wireValues map[string]int) bool {
 	return true
 }
 
+// i could not solve today's part 2, so i had to look for the correct approach on the reddit
 func solvePart2(input string) string {
+	parts := strings.Split(input, "\n\n")
+	gates := strings.Split(parts[1], "\n")
+	return swapAndJoinWires(gates)
+}
 
-	return "Solution for Part 2 not implemented"
+func find(a, b, operator string, gates []string) string {
+	for _, gate := range gates {
+		if strings.HasPrefix(gate, fmt.Sprintf("%s %s %s", a, operator, b)) ||
+			strings.HasPrefix(gate, fmt.Sprintf("%s %s %s", b, operator, a)) {
+			parts := strings.Split(gate, " -> ")
+			return parts[len(parts)-1]
+		}
+	}
+	return ""
+}
+
+func swapAndJoinWires(gates []string) string {
+	var swapped []string
+	var c0 string
+
+	for i := 0; i < 45; i++ {
+		n := fmt.Sprintf("%02d", i)
+		var m1, n1, r1, z1, c1 string
+
+		m1 = find("x"+n, "y"+n, "XOR", gates)
+		n1 = find("x"+n, "y"+n, "AND", gates)
+
+		if c0 != "" {
+			r1 = find(c0, m1, "AND", gates)
+			if r1 == "" {
+				m1, n1 = n1, m1
+				swapped = append(swapped, m1, n1)
+				r1 = find(c0, m1, "AND", gates)
+			}
+
+			z1 = find(c0, m1, "XOR", gates)
+			if strings.HasPrefix(m1, "z") {
+				m1, z1 = z1, m1
+				swapped = append(swapped, m1, z1)
+			}
+			if strings.HasPrefix(n1, "z") {
+				n1, z1 = z1, n1
+				swapped = append(swapped, n1, z1)
+			}
+			if strings.HasPrefix(r1, "z") {
+				r1, z1 = z1, r1
+				swapped = append(swapped, r1, z1)
+			}
+
+			c1 = find(r1, n1, "OR", gates)
+		}
+
+		if strings.HasPrefix(c1, "z") && c1 != "z45" {
+			c1, z1 = z1, c1
+			swapped = append(swapped, c1, z1)
+		}
+
+		if c0 == "" {
+			c0 = n1
+		} else {
+			c0 = c1
+		}
+	}
+
+	sort.Strings(swapped)
+	return strings.Join(swapped, ",")
 }
