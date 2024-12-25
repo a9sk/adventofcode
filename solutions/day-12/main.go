@@ -3,12 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"image"
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -39,7 +36,13 @@ func main() {
 }
 
 func solvePart1(input string) string {
-	grid := utils.ParseGrid(utils.ParseLines(input))
+
+	lines := strings.Split(input, "\n")
+
+	grid := make([][]rune, len(lines))
+	for i, line := range lines {
+		grid[i] = []rune(line)
+	}
 
 	groups := findGroups(grid)
 	var sum = 0
@@ -134,17 +137,21 @@ func findGroups(grid [][]rune) map[int]struct {
 	return groups
 }
 
+type Point struct {
+	x, y int
+}
+
 // this solution is inspired by many implementations i found on the AoC reddit page
 func solvePart2(input string) string {
 
-	grid := map[image.Point]rune{}
-	for y, line := range utils.ParseLines(input) {
+	grid := map[Point]rune{}
+	for y, line := range strings.Split(input, "\n") {
 		for x, rune := range line {
-			grid[image.Point{x, y}] = rune
+			grid[Point{x, y}] = rune
 		}
 	}
 
-	seen := map[image.Point]bool{}
+	seen := map[Point]bool{}
 	var sum = 0
 
 	for plot := range grid {
@@ -155,16 +162,16 @@ func solvePart2(input string) string {
 
 		area := 1
 		sides := 0
-		queue := []image.Point{plot}
+		queue := []Point{plot}
 		for len(queue) > 0 {
 			current := queue[0]
 			queue = queue[1:]
 
-			for _, direction := range []image.Point{{0, -1}, {1, 0}, {0, 1}, {-1, 0}} {
-				neighbor := current.Add(direction)
+			for _, direction := range []Point{{0, -1}, {1, 0}, {0, 1}, {-1, 0}} {
+				neighbor := Point{x: current.x + direction.x, y: current.y + direction.y}
 				if grid[neighbor] != grid[current] {
-					r := current.Add(image.Point{-direction.Y, direction.X})
-					if grid[r] != grid[current] || grid[r.Add(direction)] == grid[current] {
+					r := Point{x: current.x - direction.y, y: current.y + direction.x}
+					if grid[r] != grid[current] || grid[Point{x: r.x + direction.x, y: r.y + direction.y}] == grid[current] {
 						sides++
 					}
 				} else if !seen[neighbor] {

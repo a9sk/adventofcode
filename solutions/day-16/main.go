@@ -7,8 +7,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -65,7 +63,12 @@ type routeState struct {
 
 func solvePart1(input string) string {
 
-	grid := utils.ParseGrid(utils.ParseLines(input))
+	lines := strings.Split(input, "\n")
+
+	grid := make([][]rune, len(lines))
+	for i, line := range lines {
+		grid[i] = []rune(line)
+	}
 
 	var reindeer directedPoint
 	var end point
@@ -165,7 +168,13 @@ func getOffsets(reindeer directedPoint) []directedPoint {
 }
 
 func solvePart2(input string) string {
-	grid := utils.ParseGrid(utils.ParseLines(input))
+
+	lines := strings.Split(input, "\n")
+
+	grid := make([][]rune, len(lines))
+	for i, line := range lines {
+		grid[i] = []rune(line)
+	}
 
 	var reindeer directedPoint
 	var end point

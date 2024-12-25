@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -54,7 +52,13 @@ var directions = []struct {
 }
 
 func solvePart1(input string) string {
-	field := utils.ParseGrid(utils.ParseLines(input))
+
+	lines := strings.Split(input, "\n")
+
+	field := make([][]rune, len(lines))
+	for i, line := range lines {
+		field[i] = []rune(line)
+	}
 
 	var pos position
 
@@ -113,7 +117,14 @@ func recursiveMove(field [][]rune, pos position, direction string) ([][]rune, bo
 }
 
 func solvePart2(input string) string {
-	restartField := utils.ParseGrid(utils.ParseLines(input))
+
+	lines := strings.Split(input, "\n")
+
+	restartField := make([][]rune, len(lines))
+	for i, line := range lines {
+		restartField[i] = []rune(line)
+	}
+
 	var startPos position
 	for i := 0; i < len(restartField); i++ {
 		for j := 0; j < len(restartField[i]); j++ {

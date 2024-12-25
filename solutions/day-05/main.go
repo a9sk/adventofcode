@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -38,8 +36,11 @@ func main() {
 }
 
 func solvePart1(input string) string {
-	rules := utils.ParseLines(strings.Split(input, "\n\n")[0])    // line by line the first part of the input
-	upgrades := utils.ParseLines(strings.Split(input, "\n\n")[1]) // line by line the second part of the input
+	parts := strings.Split(input, "\n\n")
+
+	rules := strings.Split(parts[0], "\n")    // line by line the first part of the input
+	upgrades := strings.Split(parts[1], "\n") // line by line the second part of the input
+
 	var sum = 0
 
 	for i := 0; i < len(upgrades); i++ {
@@ -83,8 +84,10 @@ func isOrdered(upgrade string, rules []string) (bool, string) {
 
 func solvePart2(input string) string {
 
-	rules := utils.ParseLines(strings.Split(input, "\n\n")[0])
-	upgrades := utils.ParseLines(strings.Split(input, "\n\n")[1])
+	parts := strings.Split(input, "\n\n")
+
+	rules := strings.Split(parts[0], "\n")
+	upgrades := strings.Split(parts[1], "\n")
 	var sum = 0
 
 	for i := 0; i < len(upgrades); i++ {

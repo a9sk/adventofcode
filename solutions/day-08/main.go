@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -46,7 +44,7 @@ func main() {
 
 func solvePart1(input string) string {
 
-	lines := utils.ParseLines(input)
+	lines := strings.Split(input, "\n")
 	height := len(lines)
 	width := len(lines[0])
 
@@ -95,7 +93,7 @@ func solvePart1(input string) string {
 
 func solvePart2(input string) string {
 
-	lines := utils.ParseLines(input)
+	lines := strings.Split(input, "\n")
 	height := len(lines)
 	width := len(lines[0])
 

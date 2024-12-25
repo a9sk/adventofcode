@@ -7,8 +7,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -40,7 +38,7 @@ func main() {
 
 func solvePart1(input string) string {
 
-	var parsedInput = utils.ParseLines(input)
+	var parsedInput = strings.Split(input, "\n")
 
 	var len = len(parsedInput)
 
@@ -64,15 +62,22 @@ func solvePart1(input string) string {
 	// sum the differences between the two lists
 	sum := 0
 	for i := 0; i < len; i++ {
-		sum = sum + utils.AbsInt(left[i]-right[i])
+		sum = sum + AbsInt(left[i]-right[i])
 	}
 
 	return strconv.Itoa(sum)
 }
 
+func AbsInt(num int) int {
+	if num < 0 {
+		return -num
+	}
+	return num
+}
+
 func solvePart2(input string) string {
 
-	var parsedInput = utils.ParseLines(input)
+	var parsedInput = strings.Split(input, "\n")
 
 	var len = len(parsedInput)
 

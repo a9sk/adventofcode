@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -43,12 +41,17 @@ type point struct {
 
 func solvePart1(input string) string {
 
-	field := utils.ParseGrid(utils.ParseLines(input))
+	lines := strings.Split(input, "\n")
+
+	field := make([][]rune, len(lines))
+	for i, line := range lines {
+		field[i] = []rune(line)
+	}
 
 	// save the starting points in a slice
 	startingPoints := []point{}
 	for y, row := range field {
-		for x, _ := range row {
+		for x := range row {
 			if field[y][x] == '0' {
 				startingPoints = append(startingPoints, point{y: y, x: x})
 			}
@@ -114,11 +117,16 @@ func isValidMove(field [][]rune, current, next point, visited map[point]bool) bo
 
 func solvePart2(input string) string {
 
-	field := utils.ParseGrid(utils.ParseLines(input))
+	lines := strings.Split(input, "\n")
+
+	field := make([][]rune, len(lines))
+	for i, line := range lines {
+		field[i] = []rune(line)
+	}
 
 	startingPoints := []point{}
 	for y, row := range field {
-		for x, _ := range row {
+		for x := range row {
 			if field[y][x] == '0' {
 				startingPoints = append(startingPoints, point{y: y, x: x})
 			}

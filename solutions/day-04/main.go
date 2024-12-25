@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -38,8 +36,12 @@ func main() {
 }
 
 func solvePart1(input string) string {
-	parsedInput := utils.ParseLines(input)
-	matrix := utils.ParseGrid(parsedInput)
+	parsedInput := strings.Split(input, "\n")
+
+	matrix := make([][]rune, len(parsedInput))
+	for i, line := range parsedInput {
+		matrix[i] = []rune(line)
+	}
 
 	total := 0
 
@@ -58,15 +60,31 @@ func solvePart1(input string) string {
 			}
 		}
 		// fmt.Println("ROTATE")
-		matrix = utils.Rotate90(matrix)
+
+		n := len(matrix)
+		m := len(matrix[0])
+		rotated := make([][]rune, m)
+		for i := range rotated {
+			rotated[i] = make([]rune, n)
+		}
+		for i := 0; i < n; i++ {
+			for j := 0; j < m; j++ {
+				rotated[j][n-1-i] = matrix[i][j]
+			}
+		}
+		matrix = rotated
 	}
 
 	return strconv.Itoa(total)
 }
 
 func solvePart2(input string) string {
-	parsedInput := utils.ParseLines(input)
-	matrix := utils.ParseGrid(parsedInput)
+	parsedInput := strings.Split(input, "\n")
+
+	matrix := make([][]rune, len(parsedInput))
+	for i, line := range parsedInput {
+		matrix[i] = []rune(line)
+	}
 
 	total := 0
 

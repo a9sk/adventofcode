@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 type point struct {
@@ -53,7 +51,10 @@ func solvePart1(input string) string {
 	mapLines := strings.Split(parts[0], "\n")
 	moves := strings.ReplaceAll(parts[1], "\n", "")
 
-	warehouse := utils.ParseGrid(mapLines)
+	warehouse := make([][]rune, len(mapLines))
+	for i, line := range mapLines {
+		warehouse[i] = []rune(line)
+	}
 
 	var robotPos point
 	for y, row := range warehouse {

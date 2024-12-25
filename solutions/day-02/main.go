@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -38,11 +36,11 @@ func main() {
 }
 
 func solvePart1(input string) string {
-	var parsedInput = utils.ParseLines(input)
+	var parsedInput = strings.Split(input, "\n")
 	safeCount := 0
 
 	for i := 0; i < len(parsedInput); i++ {
-		stringList := utils.ParseSpace(parsedInput[i])
+		stringList := strings.Split(parsedInput[i], " ")
 
 		list := make([]int, len(stringList))
 
@@ -52,22 +50,23 @@ func solvePart1(input string) string {
 		}
 
 		if safe := isListSafe(list); safe {
-			fmt.Printf("%d safe\n", list)
+			// fmt.Printf("%d safe\n", list)
 			safeCount++
-		} else {
-			fmt.Printf("%d unsafe\n", list)
 		}
+		// else {
+		//  fmt.Printf("%d unsafe\n", list)
+		// }
 	}
 
 	return strconv.Itoa(safeCount)
 }
 
 func solvePart2(input string) string {
-	parsedInput := utils.ParseLines(input)
+	parsedInput := strings.Split(input, "\n")
 	safeCount := 0
 
 	for i := 0; i < len(parsedInput); i++ {
-		stringList := utils.ParseSpace((parsedInput[i]))
+		stringList := strings.Split(parsedInput[i], " ")
 
 		list := make([]int, len(stringList))
 
@@ -76,7 +75,7 @@ func solvePart2(input string) string {
 		}
 
 		if isListSafe(list) {
-			fmt.Printf("%d safe\n", list)
+			// fmt.Printf("%d safe\n", list)
 			safeCount++
 			continue
 		}
@@ -84,12 +83,12 @@ func solvePart2(input string) string {
 		// skipping each element
 		for k := 0; k < len(list); k++ {
 			if isListSafe(removeIndex(list, k)) {
-				fmt.Printf("%d safe\n", list)
+				// fmt.Printf("%d safe\n", list)
 				safeCount++
 				break
 			}
 		}
-		fmt.Printf("%d unsafe\n", list)
+		// fmt.Printf("%d unsafe\n", list)
 	}
 
 	return strconv.Itoa(safeCount)

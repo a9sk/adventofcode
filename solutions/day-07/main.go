@@ -6,8 +6,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"github.com/a9sk/adventofcode/utils"
 )
 
 func main() {
@@ -43,7 +41,7 @@ type operation struct {
 }
 
 func solvePart1(input string) string {
-	lines := utils.ParseLines(input)
+	lines := strings.Split(input, "\n")
 
 	var operations []operation
 	for _, line := range lines {
