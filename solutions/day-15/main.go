@@ -159,6 +159,83 @@ func moveRobot(warehouse [][]rune, pos point, direction rune) ([][]rune, bool) {
 }
 
 func solvePart2(input string) string {
+	parts := strings.Split(input, "\n\n")
+	grid := parts[0]
+	moves := strings.ReplaceAll(parts[1], "\n", "")
 
-	return "Solution for Part 2 not implemented"
+	r := strings.NewReplacer(
+		"#", "##",
+		"O", "[]",
+		".", "..",
+		"@", "@.")
+
+	grid = r.Replace(grid)
+
+	gridMap := make(map[point]rune)
+	robotPos := point{}
+
+	for y, line := range strings.Fields(grid) {
+		for x, ch := range line {
+			if ch == '@' {
+				robotPos = point{x, y}
+				ch = '.'
+			}
+			gridMap[point{x, y}] = ch
+		}
+	}
+
+	delta := map[rune]point{
+		'^': {0, -1},
+		'>': {1, 0},
+		'v': {0, 1},
+		'<': {-1, 0},
+		'[': {1, 0},
+		']': {-1, 0},
+	}
+
+loop:
+	for _, move := range moves {
+		queue := []point{robotPos}
+		boxes := make(map[point]rune)
+
+		for len(queue) > 0 {
+			p := queue[0]
+			queue = queue[1:]
+
+			if _, ok := boxes[p]; ok {
+				continue
+			}
+
+			boxes[p] = gridMap[p]
+
+			n := point{p.x + delta[move].x, p.y + delta[move].y}
+
+			switch gridMap[n] {
+			case '#':
+				continue loop
+			case '[', ']':
+				queue = append(queue, point{n.x + delta[gridMap[n]].x, n.y + delta[gridMap[n]].y})
+				fallthrough
+			case 'O':
+				queue = append(queue, n)
+			}
+		}
+
+		for p := range boxes {
+			gridMap[p] = '.'
+		}
+		for p, ch := range boxes {
+			gridMap[point{p.x + delta[move].x, p.y + delta[move].y}] = ch
+		}
+		robotPos = point{robotPos.x + delta[move].x, robotPos.y + delta[move].y}
+	}
+
+	sum := 0
+	for p, ch := range gridMap {
+		if ch == 'O' || ch == '[' {
+			sum += 100*p.y + p.x
+		}
+	}
+
+	return strconv.Itoa(sum)
 }
