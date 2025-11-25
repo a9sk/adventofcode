@@ -5,7 +5,7 @@ if [ -n "$1" ]; then
     DAY=$(printf "%02d" "$1")
 fi
 
-DAY_DIR="solutions/day-${DAY}"
+DAY_DIR="year-2025/day-${DAY}"
 
 if [ -d "$DAY_DIR" ]; then
     echo "Directory '$DAY_DIR' already exists."
