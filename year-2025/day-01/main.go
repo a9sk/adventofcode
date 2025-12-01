@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	_ "math"
 	"os"
 	"strconv"
 	"strings"
@@ -39,21 +40,16 @@ func solvePart1(input string) string {
 
 	s := 50
 	var c int
-	// var r []int
+
 	for _, line := range strings.Split(input, "\n") {
 		if strings.HasPrefix(line, "R") {
 			rot, _ := strconv.Atoi(line[1:])
-			// r = append(r, rot)
-			//	fmt.Println(rot)
-			s = mod(s+rot, 100)
+			s = s + rot
 		} else if strings.HasPrefix(line, "L") {
 			rot, _ := strconv.Atoi(line[1:])
-			// rot = -rot
-			// r = append(r, rot)
-			// fmt.Println(rot)
-			s = mod(s-rot, 100)
+			s = s - rot
 		}
-		if s == 0 {
+		if s%100 == 0 {
 			c++
 		}
 	}
@@ -67,5 +63,19 @@ func mod(a, b int) int {
 
 func solvePart2(input string) string {
 
-	return "Solution for Part 2 not implemented"
+	var n int
+	s := 50
+	d := map[byte]int{'R': 1, 'L': -1}
+
+	for _, line := range strings.Split(input, "\n") {
+		rot, _ := strconv.Atoi(line[1:])
+
+		for range rot {
+			if s += d[line[0]]; s%100 == 0 {
+				n++
+			}
+		}
+	}
+
+	return strconv.Itoa(n)
 }
