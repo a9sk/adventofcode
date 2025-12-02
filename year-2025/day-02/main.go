@@ -56,6 +56,38 @@ func solvePart1(input string) string {
 }
 
 func solvePart2(input string) string {
+	var sum int
 
-	return "Solution for Part 2 not implemented"
+	for _, r := range strings.Split(input, ",") {
+		rr := strings.Split(r, "-")
+		f, _ := strconv.Atoi(rr[0])
+		l, _ := strconv.Atoi(rr[1])
+	nv:
+		for i := range l - f + 1 {
+			v := strconv.Itoa(f + i)
+		nn:
+			for j := len(v) / 2; j >= 1; j-- {
+				if len(v)%j != 0 {
+					continue
+				}
+				var k int
+				var c []string
+				for k = 0; k < len(v); k += j {
+					c = append(c, string(v[k:min(k+j, len(v))]))
+				}
+
+				for a := range len(c) - 1 {
+					if c[a+1] != c[a] {
+						continue nn
+					}
+				}
+
+				t, _ := strconv.Atoi(v)
+				sum += t
+				continue nv
+			}
+		}
+	}
+
+	return strconv.Itoa(sum)
 }
