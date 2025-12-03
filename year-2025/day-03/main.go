@@ -38,14 +38,13 @@ func main() {
 func solvePart1(input string) string {
 	var sum int
 	for _, l := range strings.Split(input, "\n") {
-		// fmt.Println(l)
+
 		d := 0
 		for i := range len(l) - 1 {
 			if l[i] > l[d] {
 				d = i
 			}
 		}
-		// fmt.Println(int(l[d] - '0'))
 
 		u := len(l) - 1
 		for i := len(l) - 2; i > d; i-- {
@@ -53,7 +52,6 @@ func solvePart1(input string) string {
 				u = i
 			}
 		}
-		// fmt.Println(int(l[u] - '0'))
 
 		sum += int(l[d]-'0')*10 + int(l[u]-'0')
 	}
@@ -63,6 +61,23 @@ func solvePart1(input string) string {
 }
 
 func solvePart2(input string) string {
+	var sum int
+	for _, l := range strings.Split(input, "\n") {
+		var n string
+		var j int // index of last greatest
+		for len(n) < 12 {
+			j = 0
+			for i := j; i < len(l)-11+len(n); i++ {
+				if l[i] > l[j] {
+					j = i
+				}
+			}
+			n = n + string(l[j])
+			l = l[j+1:]
+		}
+		s, _ := strconv.Atoi(n)
+		sum += s
+	}
 
-	return "Solution for Part 2 not implemented"
+	return strconv.Itoa(sum)
 }
