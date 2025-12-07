@@ -19,6 +19,7 @@ func main() {
 	r(lines, Point{len(lines[0]) / 2, 0})
 
 	fmt.Println("part 1:", Count)
+	fmt.Println("part 2:", r2(lines, Point{len(lines[0]) / 2, 0}, map[Point]int{}))
 }
 
 func r(l []string, p Point) {
@@ -48,4 +49,35 @@ func r(l []string, p Point) {
 
 		return
 	}
+}
+
+func r2(l []string, p Point, cache map[Point]int) int {
+	if v, ok := cache[p]; ok {
+		return v
+	}
+
+	if len(l)-1 == p.y+1 {
+		cache[p] = 1
+		return 1
+	}
+
+	if l[p.y+1][p.x] == '.' {
+		cache[p] = r2(l, Point{p.x, p.y + 1}, cache)
+		return cache[p]
+	}
+
+	if l[p.y+1][p.x] == '^' {
+		t := 0
+
+		if p.x+1 < len(l[0]) {
+			t += r2(l, Point{p.x + 1, p.y}, cache)
+		}
+		if p.x-1 >= 0 {
+			t += r2(l, Point{p.x - 1, p.y}, cache)
+		}
+
+		return t
+	}
+
+	return 0
 }
