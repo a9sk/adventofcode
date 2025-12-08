@@ -23,6 +23,15 @@ func main() {
 	}
 
 	n := len(p)
+
+	var es []struct{ i, j, d int }
+	for i := range n {
+		for j := i + 1; j < n; j++ {
+			es = append(es, struct{ i, j, d int }{i, j, d(p[i], p[j])})
+		}
+	}
+	sort.Slice(es, func(a, b int) bool { return es[a].d < es[b].d })
+
 	parent := make([]int, n)
 	size := make([]int, n)
 	for i := range parent {
@@ -30,51 +39,65 @@ func main() {
 		size[i] = 1
 	}
 
-	find := func(x int) int {
-		for parent[x] != x {
-			parent[x] = parent[parent[x]]
-			x = parent[x]
-		}
-		return x
-	}
-
-	union := func(a, b int) {
-		ra, rb := find(a), find(b)
-		if ra == rb {
-			return
-		}
-		if size[ra] < size[rb] {
-			ra, rb = rb, ra
-		}
-		parent[rb] = ra
-		size[ra] += size[rb]
-	}
-
-	type edge struct{ i, j, d int }
-	var ds []edge
-	for i := range n {
-		for j := i + 1; j < n; j++ {
-			dx := p[i].x - p[j].x
-			dy := p[i].y - p[j].y
-			dz := p[i].z - p[j].z
-			d := dx*dx + dy*dy + dz*dz
-			ds = append(ds, edge{i, j, d})
-		}
-	}
-
-	sort.Slice(ds, func(a, b int) bool { return ds[a].d < ds[b].d })
-
-	for k := 0; k < 1000 && k < len(ds); k++ {
-		union(ds[k].i, ds[k].j)
+	for k := 0; k < 1000 && k < len(es); k++ {
+		u(parent, size, es[k].i, es[k].j)
 	}
 
 	var sizes []int
 	for i := range n {
-		if find(i) == i {
+		if f(parent, i) == i {
 			sizes = append(sizes, size[i])
 		}
 	}
-
 	sort.Slice(sizes, func(a, b int) bool { return sizes[a] > sizes[b] })
-	fmt.Println("part 1: ", sizes[0]*sizes[1]*sizes[2])
+
+	fmt.Println("part 1:", sizes[0]*sizes[1]*sizes[2])
+
+	for i := range parent {
+		parent[i] = i
+		size[i] = 1
+	}
+
+	components := n
+	var last struct{ i, j, d int }
+
+	for _, e := range es {
+		if u(parent, size, e.i, e.j) {
+			last = e
+			components--
+			if components == 1 {
+				break
+			}
+		}
+	}
+
+	fmt.Println("part 2:", p[last.i].x*p[last.j].x)
+}
+
+func d(a, b Point) int {
+	dx := a.x - b.x
+	dy := a.y - b.y
+	dz := a.z - b.z
+	return dx*dx + dy*dy + dz*dz
+}
+
+func f(parent []int, x int) int {
+	for parent[x] != x {
+		parent[x] = parent[parent[x]]
+		x = parent[x]
+	}
+	return x
+}
+
+func u(parent, size []int, a, b int) bool {
+	ra, rb := f(parent, a), f(parent, b)
+	if ra == rb {
+		return false
+	}
+	if size[ra] < size[rb] {
+		ra, rb = rb, ra
+	}
+	parent[rb] = ra
+	size[ra] += size[rb]
+	return true
 }
